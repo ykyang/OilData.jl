@@ -2,3 +2,6 @@ name = "OilData"
 uuid = "ed55d250-9399-4b64-848e-cd98e165462d"
 authors = ["Yi-Kun Yang <ykyang@gmail.com>"]
 version = "0.1.0"
+
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
