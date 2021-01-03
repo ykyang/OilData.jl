@@ -1,11 +1,10 @@
 module OilData
 
 export 
-    add_day,
-    greet
+    add_day
 
     
-greet() = print("Hello World!")
+#greet() = print("Hello World!")
 
 include("parser.jl")
 
