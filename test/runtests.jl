@@ -57,15 +57,23 @@ global_logger(logger)
 @test false == false
 
 function data_dir()
-    path = pwd()
+    
+    #@info "pwd(): $path"
+    # if basename(path) == "OilData"
+    #     path = joinpath(path, "test")
+    # end
 
-    if basename(path) == "OilData"
-        path = joinpath(path, "test")
+    path = joinpath(pwd(), "data")
+    if isdir(path)
+        return path # ".../.../../OilData/test/data"
     end
 
-    path = joinpath(path, "data")
+    path = joinpath(pwd(), "test", "data")
+    if isdir(path)
+        return path # ".../.../../OilData/test/data"
+    end
 
-    return path # ".../.../../OilData/test/data"
+    return nothing
 end
 
 #include("driver.jl")

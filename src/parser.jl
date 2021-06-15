@@ -109,13 +109,40 @@ end
 # 9.5            0              0              0              0              0              0              0              0              0              
 function read_rsm(io::IOStream)
     line = readline(io) # 1
-    df_main = read_rsm_section(io)
+    nt = read_rsm_section(io) # (body = df_body, meta = df_meta)
+    df_body = nt.body
+    df_meta = nt.meta
     while !eof(io)
-        df = read_rsm_section(io)
-        df_main = hcat(df_main, df[!,2:end], makeunique=true) # skip 1st column that is DAYS
+        nt = read_rsm_section(io)
+        df_body = hcat(df_body, nt.body[!,2:end], makeunique=true) # skip 1st column that is DAYS
+        df_meta = hcat(df_meta, nt.meta[!,2:end], makeunique=true)
     end
 
-    return df_main
+    # assert
+    @assert names(nt.meta) == names(nt.body) "DataFrame generates different column names?"
+
+    # https://stackoverflow.com/questions/37668312/transpose-of-julia-dataframe
+    df = df_meta
+    df_metat = DataFrame([[names(df)]; collect.(eachrow(df))], [:column; Symbol.(axes(df, 1))])
+
+    # Row │ column       1         2         3         4
+    #     │ String       String    String    String    String
+    #─────┼───────────────────────────────────────────────────────
+    #   1 │ TIME         TIME      DAYS
+    #   2 │ YEARS        YEARS     YEARS
+    #   3 │ FPPW         FPPW      PSIA      FIELD     1
+    #   4 │ FPPO         FPPO      PSIA      FIELD     1
+    # ...
+    # 199 │ WOPR         WOPR      STB/DAY   ADA-1761
+    # 200 │ WOPR_3       WOPR      STB/DAY   ADA-1762
+    # 201 │ WOPR_1       WOPR      STB/DAY   ADA-1763
+    # 202 │ WOPR_2       WOPR      STB/DAY   ADA-1764
+    #
+    # df = filter(["1", "3", "4"] => (c1,c3,c4) -> c1 == "WOPR" && c3 == "ADA-1762" && isempty(c4), nt.metat)
+    # df[1,1] -> WOPR_3
+    # use df[1,1] for column name to get column from nt.body
+    
+    return (body = df_body, meta = df_metat)
 end
 function read_rsm_section(io::IOStream)
     # starts right after "1"
@@ -135,10 +162,12 @@ function read_rsm_section(io::IOStream)
     tokens = split(line , delimiters, keepempty=false)
     col_count = length(tokens)
     row_1 = tokens
-    
 
     # Create DataFrame
-    df = DataFrame(fill(Float64[], col_count), row_1, makeunique=true)
+    df_body = DataFrame(fill(Float64[], col_count), row_1, makeunique=true)
+    df_meta = DataFrame(fill(String[],  col_count), row_1, makeunique=true)
+
+    push!(df_meta, row_1)
 
     # units:  DAYS           YEARS          PSIA           PSIA           PSIA           STB            STB/DAY        BTU            STB            STB/DAY        
     line = readline(io)
@@ -151,6 +180,7 @@ function read_rsm_section(io::IOStream)
         push!(tokens, token)
     end
     row_2 = tokens
+    push!(df_meta, row_2)
 
     # 3rd row: 
     line = readline(io)
@@ -163,6 +193,7 @@ function read_rsm_section(io::IOStream)
         push!(tokens, token)
     end
     row_3 = tokens
+    push!(df_meta, row_3)
 
     # 4th row: 
     line = readline(io)
@@ -175,6 +206,7 @@ function read_rsm_section(io::IOStream)
         push!(tokens, token)
     end
     row_4 = tokens
+    push!(df_meta, row_4)
 
     readline(io) # ---------------...
 
@@ -190,8 +222,8 @@ function read_rsm_section(io::IOStream)
         end
         tokens = split(line, delimiters, keepempty=false)
         tokens = parse.(Float64, tokens)
-        push!(df, tokens)
+        push!(df_body, tokens)
     end
 
-    return df
+    return (body = df_body, meta = df_meta)
 end

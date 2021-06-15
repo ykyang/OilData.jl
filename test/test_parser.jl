@@ -37,14 +37,14 @@ function test_find_prt_start_date()
 end
 
 function test_read_rsm()
-    path = joinpath(data_dir(), "Pad-X_50_19.RSM")
-    
-    df = nothing
+    path = joinpath(data_dir(), "test_read_rsm.RSM")
+
+    nt = nothing
     open(path, "r") do io
-        df = read_rsm(io)
+        nt = read_rsm(io)
     end
 
-    return df
+    return nt
 end
 
 @testset "add_day" begin
@@ -53,8 +53,7 @@ end
 
 @testset "find_prt_start_date" begin
     test_find_prt_start_date()
+    test_read_rsm()
 end
-
-df = test_read_rsm()
 
 nothing
