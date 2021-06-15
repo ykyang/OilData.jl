@@ -1,3 +1,12 @@
+# Simply put
+# Run from terminal
+#   julia --project=@. test/runtests.jl
+#
+# Run from REPL
+#   julia> include("test/runtests.jl")
+# When run from REPL, may need to exit out to force re-compile of the module.
+# 
+#
 # Document
 # http://abelsiqueira.github.io/blog/test-driven-development-in-julia/
 #
@@ -28,7 +37,21 @@
 
 using Test
 using Dates
-using OilData
+using Logging
+
+# see https://discourse.julialang.org/t/writing-tests-in-vs-code-workflow-autocomplete-and-tooltips/57488
+# see https://github.com/julia-vscode/julia-vscode/issues/800
+if isdefined(@__MODULE__, :LanguageServer)
+    # invoked by VS Code
+    include("../src/OilData.jl")
+    using .OilData
+else
+    # invoked during test
+    using OilData
+end
+
+logger = ConsoleLogger(stdout, Logging.Info)
+global_logger(logger)
 
 @test true == true
 @test false == false
@@ -45,5 +68,5 @@ function data_dir()
     return path # ".../.../../OilData/test/data"
 end
 
-include("driver.jl")
-
+#include("driver.jl")
+include("test_parser.jl")

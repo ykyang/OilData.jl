@@ -1,8 +1,21 @@
+# Deprecated
+# use various test_*.jl files
 using Test
 
 using Dates
-using OilData
 using Logging
+
+# see https://discourse.julialang.org/t/writing-tests-in-vs-code-workflow-autocomplete-and-tooltips/57488
+# see https://github.com/julia-vscode/julia-vscode/issues/800
+if isdefined(@__MODULE__, :LanguageServer)
+    # invoked by VS Code
+    include("../src/OilData.jl")
+    using .OilData
+else
+    # invoked during test
+    using OilData
+end
+
 
 od = OilData
 
