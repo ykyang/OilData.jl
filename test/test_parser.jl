@@ -36,7 +36,7 @@ function test_find_prt_start_date()
     @test DateTime(Date(2019, 2, 1), Time(00,00,00)) == start_datetime
 end
 
-function test_read_rsm()
+function run_read_rsm()
     path = joinpath(data_dir(), "test_read_rsm.RSM")
 
     nt = nothing
@@ -46,6 +46,23 @@ function test_read_rsm()
 
     return nt
 end
+
+function test_read_rsm()
+    nt = run_read_rsm()
+
+    df_body = nt.body
+    df_meta = nt.meta
+
+    #       No. of columns == No. of rows
+    @test size(df_body)[2] == size(df_meta)[1]
+
+    # "WOPR" + "ADA-1762" -> column name -> value
+    df = filter(["1", "3", "4"] => (c1,c3,c4) -> c1 == "WOPR" && c3 == "ADA-1762" && isempty(c4), df_meta)
+    @test "WOPR_3" == df[1,1]
+    @test df_body[!, "WOPR_3"][100:110] == [1.27629, 1.201, 3.50271, 2.99395, 2.52574, 2.27444, 1.9766, 1.74319, 1.58073, 1.51217, 1.45468]
+    @test df_body[!, "TIME"][1:10] == [0.0, 1.0, 1.35154, 1.66463, 2.30742, 3.7002, 5.02709, 6.41903, 7.79777, 9.28154]
+end
+
 
 @testset "add_day" begin
     test_add_day()

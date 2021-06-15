@@ -58,7 +58,7 @@ global_logger(logger)
 
 function data_dir()
     
-    #@info "pwd(): $path"
+    #@info "pwd(): $(pwd())"
     # if basename(path) == "OilData"
     #     path = joinpath(path, "test")
     # end
@@ -69,6 +69,21 @@ function data_dir()
     end
 
     path = joinpath(pwd(), "test", "data")
+    if isdir(path)
+        return path # ".../.../../OilData/test/data"
+    end
+
+    path = joinpath(pwd(), "..", "data")
+    if isdir(path)
+        return path # ".../.../../OilData/test/data"
+    end
+
+    path = joinpath(pwd(), "..", "..", "data")
+    if isdir(path)
+        return path # ".../.../../OilData/test/data"
+    end
+
+    path = joinpath(pwd(), "..", "..", "..", "data")
     if isdir(path)
         return path # ".../.../../OilData/test/data"
     end

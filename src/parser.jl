@@ -107,6 +107,33 @@ end
 # 1              0              0              0              0              0              0              0              0              0              
 # 4              0              0              0              0              0              0              0              0              0              
 # 9.5            0              0              0              0              0              0              0              0              0              
+
+"""
+
+nt.body
+  Row │ TIME       YEARS       FPPW     FPPO     FPPG     
+      │ Float64    Float64     Float64  Float64  Float64  
+──────┼───────────────────────────────────────────────────
+    1 │   0.0      0.0         5316.25  6415.77  7839.76  
+    2 │   1.0      0.00273785  5316.22  6415.66  7839.66  
+    3 │   1.35154  0.00370032  5322.81  6434.31  7855.26  
+    4 │   1.66463  0.0045575   5326.12  6446.29  7865.1   
+    5 │   2.30742  0.00631736  5331.27  6462.0   7878.14
+
+nt.meta
+Row │ column       1         2         3         4
+│ String       String    String    String    String
+─────┼───────────────────────────────────────────────────────
+1 │ TIME         TIME      DAYS
+2 │ YEARS        YEARS     YEARS
+3 │ FPPW         FPPW      PSIA      FIELD     1
+4 │ FPPO         FPPO      PSIA      FIELD     1
+...
+199 │ WOPR         WOPR      STB/DAY   ADA-1761
+200 │ WOPR_3       WOPR      STB/DAY   ADA-1762
+201 │ WOPR_1       WOPR      STB/DAY   ADA-1763
+202 │ WOPR_2       WOPR      STB/DAY   ADA-1764
+"""
 function read_rsm(io::IOStream)
     line = readline(io) # 1
     nt = read_rsm_section(io) # (body = df_body, meta = df_meta)
@@ -114,6 +141,10 @@ function read_rsm(io::IOStream)
     df_meta = nt.meta
     while !eof(io)
         nt = read_rsm_section(io)
+
+        # Must have the same number or rows
+        @assert size(df_body)[1] == size(nt.body)[1] "SUMMARY sections has different number of rows"
+        
         df_body = hcat(df_body, nt.body[!,2:end], makeunique=true) # skip 1st column that is DAYS
         df_meta = hcat(df_meta, nt.meta[!,2:end], makeunique=true)
     end
@@ -121,32 +152,16 @@ function read_rsm(io::IOStream)
     # assert
     @assert names(nt.meta) == names(nt.body) "DataFrame generates different column names?"
 
+    # Transpose meta table
     # https://stackoverflow.com/questions/37668312/transpose-of-julia-dataframe
     df = df_meta
     df_metat = DataFrame([[names(df)]; collect.(eachrow(df))], [:column; Symbol.(axes(df, 1))])
-
-    # Row │ column       1         2         3         4
-    #     │ String       String    String    String    String
-    #─────┼───────────────────────────────────────────────────────
-    #   1 │ TIME         TIME      DAYS
-    #   2 │ YEARS        YEARS     YEARS
-    #   3 │ FPPW         FPPW      PSIA      FIELD     1
-    #   4 │ FPPO         FPPO      PSIA      FIELD     1
-    # ...
-    # 199 │ WOPR         WOPR      STB/DAY   ADA-1761
-    # 200 │ WOPR_3       WOPR      STB/DAY   ADA-1762
-    # 201 │ WOPR_1       WOPR      STB/DAY   ADA-1763
-    # 202 │ WOPR_2       WOPR      STB/DAY   ADA-1764
-    #
-    # df = filter(["1", "3", "4"] => (c1,c3,c4) -> c1 == "WOPR" && c3 == "ADA-1762" && isempty(c4), nt.metat)
-    # df[1,1] -> WOPR_3
-    # use df[1,1] for column name to get column from nt.body
     
     return (body = df_body, meta = df_metat)
 end
 function read_rsm_section(io::IOStream)
     # starts right after "1"
-    # ends with "1" of eof
+    # ends with "1" or eof
     
     colinds = [2, 17, 32, 47, 62, 77, 92, 107, 122, 137]
     delta = 14
