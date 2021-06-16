@@ -2,7 +2,7 @@ using DataFrames
 import Dates
 
 """
-add_day(start, duration)
+    add_day(start, duration)
 
 Add `duration` number of days to the `start` date.  Number of days could be
 decimal.
@@ -83,7 +83,7 @@ end
 # 
 #1
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
-# SUMMARY OF RUN Pad-X_50_19 :: Run Date and Time : Fri Jun 11 12:18:19 2021 Central Daylight Time
+# SUMMARY OF RUN Pad-X_51_19 :: Run Date and Time : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
 # TIME           YEARS          FPPW           FPPO           FPPG           FNQT           FNQR           FEIP           FWIT           FWIR           
 # DAYS           YEARS          PSIA           PSIA           PSIA           STB            STB/DAY        BTU            STB            STB/DAY        
@@ -93,24 +93,56 @@ end
 # 0              0              5316.56        6415.72        7839.82        0              0              0              0              0              
 # 1              0.00273785     5316.56        6415.62        7839.75        0              0              0              0              0              
 # 4              0.0109514      5316.68        6420.9         7843.84        0              0              0              1.20911        0.403038       
-#
 #1
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
-# SUMMARY OF RUN Pad-X_50_19 :: Run Date and Time : Fri Jun 11 12:18:19 2021 Central Daylight Time
+# SUMMARY OF RUN Pad-X_51_19 :: Run Date and Time : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
-# TIME           CWPRL          CWPTL          GGIR           GGIR           GGIT           GGIT           GGOR           GGOR           GGPR           
-# DAYS           STB/DAY        STB            MSCF/DAY       MSCF/DAY       MSCF           MSCF           MSCF/STB       MSCF/STB       MSCF/DAY       
-#                MdM-20XX       MdM-20XX       G              FIELD          G              FIELD          G              FIELD          G              
-#                40 24 15       40 24 15                                                                                                                
-# ------------------------------------------------------------------------------------------------------------------------------------------------------
-# 0              0              0              0              0              0              0              0              0              0              
-# 1              0              0              0              0              0              0              0              0              0              
-# 4              0              0              0              0              0              0              0              0              0              
-# 9.5            0              0              0              0              0              0              0              0              0              
-
+# TIME           WOPR           WOPR           WOPT           WOPT           WOPT           WOPT           
+# DAYS           STB/DAY        STB/DAY        STB            STB            STB            STB            
+#                ADA-1763       ADA-1764       ADA-1761       ADA-1762       ADA-1763       ADA-1764       
+#                                                                                                          
+# ---------------------------------------------------------------------------------------------------------
+# 0              0              0              0              0              0              0              
+# 1              0              0              0              0              0              0              
+# 4              0              0              0              0              0              0              
 """
+    read_rsm(io::IOStream)
+    read_rsm(filename::String)
 
-nt.body
+Parse RSM file and return (body=DataFrame, meta=DataFrame).
+
+Parse
+```
+1
+ ------------------------------------------------------------------------------------------------------------------------------------------------------
+ SUMMARY OF RUN Pad-X_51_19 :: Run Date and Time : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ ------------------------------------------------------------------------------------------------------------------------------------------------------
+ TIME           YEARS          FPPW           FPPO           FPPG           FNQT           FNQR           FEIP           FWIT           FWIR           
+ DAYS           YEARS          PSIA           PSIA           PSIA           STB            STB/DAY        BTU            STB            STB/DAY        
+                               FIELD          FIELD          FIELD          FIELD          FIELD          FIELD          FIELD          FIELD          
+                               1              1              1                                            1                                            
+ ------------------------------------------------------------------------------------------------------------------------------------------------------
+ 0              0              5316.56        6415.72        7839.82        0              0              0              0              0              
+ 1              0.00273785     5316.56        6415.62        7839.75        0              0              0              0              0              
+ 4              0.0109514      5316.68        6420.9         7843.84        0              0              0              1.20911        0.403038       
+1
+ ------------------------------------------------------------------------------------------------------------------------------------------------------
+ SUMMARY OF RUN Pad-X_51_19 :: Run Date and Time : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ ------------------------------------------------------------------------------------------------------------------------------------------------------
+ TIME           WOPR           WOPR           WOPT           WOPT           WOPT           WOPT           
+ DAYS           STB/DAY        STB/DAY        STB            STB            STB            STB            
+                ADA-1763       ADA-1764       ADA-1761       ADA-1762       ADA-1763       ADA-1764       
+                                                                                                          
+ ---------------------------------------------------------------------------------------------------------
+ 0              0              0              0              0              0              0              
+ 1              0              0              0              0              0              0              
+ 4              0              0              0              0              0              0              
+```
+
+and return a named tuple (body=DataFrame, meta=DataFrame)
+
+`body`
+```  
   Row │ TIME       YEARS       FPPW     FPPO     FPPG     
       │ Float64    Float64     Float64  Float64  Float64  
 ──────┼───────────────────────────────────────────────────
@@ -119,33 +151,48 @@ nt.body
     3 │   1.35154  0.00370032  5322.81  6434.31  7855.26  
     4 │   1.66463  0.0045575   5326.12  6446.29  7865.1   
     5 │   2.30742  0.00631736  5331.27  6462.0   7878.14
+```
 
-nt.meta
-Row │ column       1         2         3         4
-│ String       String    String    String    String
+`meta`
+```
+ Row │ column       1         2         3         4          
+     │ String       String    String    String    String     
 ─────┼───────────────────────────────────────────────────────
-1 │ TIME         TIME      DAYS
-2 │ YEARS        YEARS     YEARS
-3 │ FPPW         FPPW      PSIA      FIELD     1
-4 │ FPPO         FPPO      PSIA      FIELD     1
-...
-199 │ WOPR         WOPR      STB/DAY   ADA-1761
-200 │ WOPR_3       WOPR      STB/DAY   ADA-1762
-201 │ WOPR_1       WOPR      STB/DAY   ADA-1763
-202 │ WOPR_2       WOPR      STB/DAY   ADA-1764
+   1 │ TIME         TIME      DAYS
+   2 │ YEARS        YEARS     YEARS
+   3 │ FPPW         FPPW      PSIA      FIELD     1
+   4 │ FPPO         FPPO      PSIA      FIELD     1
+ ...  
+ 199 │ WOPR         WOPR      STB/DAY   ADA-1761
+ 200 │ WOPR_3       WOPR      STB/DAY   ADA-1762
+ 201 │ WOPR_1       WOPR      STB/DAY   ADA-1763
+ 202 │ WOPR_2       WOPR      STB/DAY   ADA-1764
+```
+
+ where
+ * `column` is the unique column name in `body`
+ * "1" is the first row in RSM header
+ * "2" is the second row in RSM header
+ * "3" is the third row in RSM header
+ * "4" is the fourth row in RSM header
 """
 function read_rsm(io::IOStream)
     line = readline(io) # 1
+
+    # Read first SUMMARY
     nt = read_rsm_section(io) # (body = df_body, meta = df_meta)
     df_body = nt.body
     df_meta = nt.meta
+
+    # Append the rest of SUMMARY
     while !eof(io)
         nt = read_rsm_section(io)
 
         # Must have the same number or rows
         @assert size(df_body)[1] == size(nt.body)[1] "SUMMARY sections has different number of rows"
         
-        df_body = hcat(df_body, nt.body[!,2:end], makeunique=true) # skip 1st column that is DAYS
+        # skip the first column which is DAYS again
+        df_body = hcat(df_body, nt.body[!,2:end], makeunique=true)
         df_meta = hcat(df_meta, nt.meta[!,2:end], makeunique=true)
     end
 
@@ -155,10 +202,56 @@ function read_rsm(io::IOStream)
     # Transpose meta table
     # https://stackoverflow.com/questions/37668312/transpose-of-julia-dataframe
     df = df_meta
-    df_metat = DataFrame([[names(df)]; collect.(eachrow(df))], [:column; Symbol.(axes(df, 1))])
+    df_meta = DataFrame([[names(df)]; collect.(eachrow(df))], [:column; Symbol.(axes(df, 1))])
     
-    return (body = df_body, meta = df_metat)
+    return (body = df_body, meta = df_meta)
 end
+function read_rsm(filename)
+    nt = nothing
+    open(filename, "r") do io
+        nt = read_rsm(io)
+    end
+
+    return nt
+end
+
+"""
+    read_rsm_section(io::IOStream)
+
+Reads a section of RSM file.
+
+A section could end with "1"
+```
+ ------------------------------------------------------------------------------------------------------------------------------------------------------
+ SUMMARY OF RUN Pad-X_51_19 :: Run Date and Time : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ ------------------------------------------------------------------------------------------------------------------------------------------------------
+ TIME           YEARS          FPPW           FPPO           FPPG           FNQT           FNQR           FEIP           FWIT           FWIR           
+ DAYS           YEARS          PSIA           PSIA           PSIA           STB            STB/DAY        BTU            STB            STB/DAY        
+                               FIELD          FIELD          FIELD          FIELD          FIELD          FIELD          FIELD          FIELD          
+                               1              1              1                                            1                                            
+ ------------------------------------------------------------------------------------------------------------------------------------------------------
+ 0              0              5316.56        6415.72        7839.82        0              0              0              0              0              
+ 1              0.00273785     5316.56        6415.62        7839.75        0              0              0              0              0              
+ 4              0.0109514      5316.68        6420.9         7843.84        0              0              0              1.20911        0.403038       
+1
+```
+
+or `eof`
+
+```
+ ------------------------------------------------------------------------------------------------------------------------------------------------------
+ SUMMARY OF RUN Pad-X_51_19 :: Run Date and Time : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ ------------------------------------------------------------------------------------------------------------------------------------------------------
+ TIME           YEARS          FPPW           FPPO           FPPG           FNQT           FNQR           FEIP           FWIT           FWIR           
+ DAYS           YEARS          PSIA           PSIA           PSIA           STB            STB/DAY        BTU            STB            STB/DAY        
+                               FIELD          FIELD          FIELD          FIELD          FIELD          FIELD          FIELD          FIELD          
+                               1              1              1                                            1                                            
+ ------------------------------------------------------------------------------------------------------------------------------------------------------
+ 0              0              5316.56        6415.72        7839.82        0              0              0              0              0              
+ 1              0.00273785     5316.56        6415.62        7839.75        0              0              0              0              0              
+ 4              0.0109514      5316.68        6420.9         7843.84        0              0              0              1.20911        0.403038       
+```
+"""
 function read_rsm_section(io::IOStream)
     # starts right after "1"
     # ends with "1" or eof

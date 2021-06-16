@@ -88,8 +88,9 @@ function data_dir()
         return path # ".../.../../OilData/test/data"
     end
 
-    return nothing
+    throw(
+        ErrorException("No data/ found")
+    )
 end
 
-#include("driver.jl")
 include("test_parser.jl")
