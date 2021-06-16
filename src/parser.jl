@@ -335,3 +335,29 @@ function read_rsm_section(io::IOStream)
 
     return (body = df_body, meta = df_meta)
 end
+
+"""
+
+
+    find_column_name(df_meta, c1, c3, c4)
+
+Filter rows of the meta table based on column 1, 3, 4.  Check if there is 
+1 and only 1 row, then return [1,1] that is "WOPR_3" in the example.
+
+```
+ Row │ column  1       2        3         4
+     │ String  String  String   String    String
+─────┼───────────────────────────────────────────
+   1 │ WOPR_3  WOPR    STB/DAY  ADA-1762
+```
+"""
+function find_column_name(df_meta, c1, c3, c4)
+    df = filter(
+        ["1", "3", "4"] => (x1,x3,x4) -> c1 == x1 && c3 == x3 && c4 == x4, 
+        df_meta
+    )
+
+    @assert size(df)[1] == 1 "None or multiple column names found"
+
+    return df[1,1]
+end
