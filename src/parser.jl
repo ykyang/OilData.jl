@@ -17,7 +17,11 @@ julia> later = add_day(start, 1.50)
 ```
 """
 function add_day(start::Dates.DateTime, duration)
-    d = start + Dates.Millisecond(Int(duration*86400*1000)) # convert days to ms
+    #d = start + Dates.Millisecond(Int(duration*86400*1000)) # convert days to ms
+
+    d = start + Dates.Millisecond( # convert days to ms
+            convert(Int64, round(duration*86400*1000, digits=4)) # 4 is from trial&error, no idea why
+        )
     return d
 end
 

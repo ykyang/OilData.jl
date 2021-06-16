@@ -22,13 +22,31 @@ function test_add_day()
     @test_throws MethodError add_day(1, 1.0) 
     @test_throws MethodError add_day(1.0, 1.0) 
 
-    # Test broadcast
+    # Test broadcast (Vector{DateTime}, Float64)
     dts_0 = [dt_0, dt_1]
     dts_1 = [
         DateTime(Date(2021, 1, 2), Time(15, 32, 33)), 
         DateTime(Date(2021, 1, 3), Time(15, 32, 33))
     ]
     @test add_day.(dts_0, 1) == dts_1
+
+    # Test broadcast (Vector{DateTime}, Vector{Float64})
+    dts_0 = [dt_0, dt_0]
+    durations = [1, 2]
+    dts_1 = [
+        DateTime(Date(2021, 1, 2), Time(15, 32, 33)), 
+        DateTime(Date(2021, 1, 3), Time(15, 32, 33))
+    ]
+    @test add_day.(dts_0, durations) == dts_1
+
+    # Test broadcast (DateTime, Vector{Float64})
+    dt_0 = DateTime(Date(2021, 1, 1), Time(15, 32, 33))
+    durations = [1, 2]
+    dts_1 = [
+        DateTime(Date(2021, 1, 2), Time(15, 32, 33)), 
+        DateTime(Date(2021, 1, 3), Time(15, 32, 33))
+    ]
+    @test add_day.(dt_0, durations) == dts_1
 end
 
 function test_find_prt_start_date()
@@ -65,6 +83,12 @@ function test_read_rsm()
     @test "WOPR_3" == find_column_name(df_meta, "WOPR", "ADA-1762", "")
     # 2. Get value from body table
     @test df_body[100:110, "WOPR_3"] == [1.27629, 1.201, 3.50271, 2.99395, 2.52574, 2.27444, 1.9766, 1.74319, 1.58073, 1.51217, 1.45468]
+
+    # Test data type
+    colname = find_column_name(df_meta, "WOPR", "ADA-1762", "")
+    @test "WOPR_3" == colname
+    @test df_body[!,"TIME"]   isa Vector{Float64}
+    @test df_body[!, colname] isa Vector{Float64}
 end
 
 
