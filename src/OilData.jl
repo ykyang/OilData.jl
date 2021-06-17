@@ -11,5 +11,5 @@ include("parser.jl")
 export add_day, find_prt_start_date, read_rsm, find_column_name
 
 include("plotly.jl")
-export plotly_trace
+export plotly_trace, plotly_layout
 end # module

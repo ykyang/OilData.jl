@@ -11,7 +11,7 @@ function plotly_trace(
     )
 
     trace = nothing
-    if "WBHP" == label
+    if     "WBHP"  == label
         trace = scatter(
             mode = "lines",
             line = Dict(
@@ -33,7 +33,7 @@ function plotly_trace(
             ),
             yaxis = "y3",
         )                
-    elseif "WOPR" == label
+    elseif "WOPR"  == label
         trace = scatter(
             mode = "lines",
             line = Dict(
@@ -54,7 +54,7 @@ function plotly_trace(
                 ),
             ),
         )
-    elseif "WOPT" == label
+    elseif "WOPT"  == label
         trace = scatter(
             mode = "lines",
             line = Dict(
@@ -76,7 +76,7 @@ function plotly_trace(
             ),
             yaxis = "y2",
         )
-    elseif "WWPR" == label
+    elseif "WWPR"  == label
         trace = scatter(
             mode = "lines",
             line = Dict(
@@ -107,6 +107,73 @@ function plotly_trace(
 
     return trace
 end
+
+function plotly_layout()
+    layout = Layout(
+        #title = "Pad 6",
+        #showlegend = false,
+        showlegend = true,
+        margin = Dict(
+            #:pad => -10,
+            #:b => 0,
+        ),
+        xaxis = Dict(
+            :title => "Time",
+            :dtick => 86400*1000*30, # unit is ms
+            :ticklen => 5,
+            :domain => [0.1, 0.95],
+            :rangemode => "tozero",
+            #:automargin => false,
+            #:showspikes => false,
+            #:spikemode => "toaxis",
+            #:showline => true,
+            #:tickformat => "%b %Y",
+            #:tickvals = [1, 3, 5, 7, 9, 11],
+            #:ticktext = ['One', 'Three', 'Five', 'Seven', 'Nine', 'Eleven']
+        ),
+        yaxis = Dict(
+            :title => "Liquid Flowrate [STB/d]",
+            #:range => [0, 35],
+            :showline => true,
+            :ticklen => 5,
+            :rangemode => "tozero",
+        ),
+        yaxis2 = Dict(
+            :title => "Liquid Production Volume [STB]",
+            #:range => [0, 2500],
+            :rangemode => "tozero",
+            :ticklen => 5,
+            # titlefont: {color: '#ff7f0e'},
+            # tickfont: {color: '#ff7f0e'},
+            :anchor => "x", # "free"
+            :overlaying => "y",
+            :side => "right",
+            :position => 1.0,
+            :showline => true,
+            :zeroline => false,
+            :showgrid => false,
+        ),
+        yaxis3 = Dict(
+            :title => "Pressure [psi]",
+            #:range => [0, 11000],
+            :rangemode => "tozero",
+            :ticklen => 5,
+            # titlefont: {color: '#ff7f0e'},
+            # tickfont: {color: '#ff7f0e'},
+            :anchor => "free", # "free"
+            :overlaying => "y",
+            :side => "left",
+            :position => 0.05,
+            :showline => true,
+            :zeroline => false,
+            :showgrid => false,
+        ),
+    )
+    
+    return layout
+end
+
+# deprecated
 
 function wbhp_trace(;alpha=0.2, db...)
     trace = scatter(
