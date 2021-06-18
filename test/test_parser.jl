@@ -55,7 +55,13 @@ function test_find_prt_start_date()
     path = joinpath(data_dir(), "test_start_date.PRT")
     start_datetime = find_prt_start_date(path)
      
-    @test DateTime(Date(2019, 2, 1), Time(00,00,00)) == start_datetime
+    @test DateTime(2020, 1, 18) == start_datetime
+end
+
+function test_find_schedule_end_date()
+    path = joinpath(data_dir(), "test_schedule.ixf")
+    end_datetime = find_schedule_end_date(path)
+    @test DateTime(2021,2,4) == end_datetime
 end
 
 function run_read_rsm()
@@ -95,6 +101,7 @@ end
 @testset "base" begin
     test_add_day()
     test_find_prt_start_date()
+    test_find_schedule_end_date()
 end
 
 @testset "read_rsm" begin
