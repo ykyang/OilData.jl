@@ -12,6 +12,7 @@ function plotly_trace(
     history_mode = "lines", model_mode = "lines",
     #history_mode = "lines", model_mode = "markers",
     #history_mode = "markers", model_mode = "lines",
+    history_line_width = 3, model_line_width = 2,
     water_color = "30,144,255", oil_color="0,128,0", bhp_color = "0,0,0",
     db...
     )
@@ -23,6 +24,7 @@ function plotly_trace(
             mode = model_mode,
             line = Dict(
                 :color => "rgba($bhp_color,$model_alpha)",
+                :width => model_line_width,
             ),
             marker = Dict(
                 :color => "rgba($bhp_color,$model_alpha)",
@@ -40,6 +42,8 @@ function plotly_trace(
             mode = history_mode,
             line = Dict(
                 :color => "rgba($bhp_color,$history_alpha)",
+                #:width => history_line_width,
+                :width => model_line_width, # no need to be thick
             ),
             marker = Dict(
                 :color => "rgba($bhp_color,$history_alpha)",
@@ -58,6 +62,7 @@ function plotly_trace(
             line = Dict(
                 :shape => "vh",
                 :color => "rgba($oil_color,$model_alpha)",
+                :width => model_line_width,
             ),
             marker = Dict(
                 :color => "rgba($oil_color,$model_alpha)",
@@ -76,6 +81,7 @@ function plotly_trace(
             line = Dict(
                 :shape => "vh",
                 :color => "rgba($oil_color,$history_alpha)",
+                :width => history_line_width,
             ),
             marker = Dict(
                 :color => "rgba($oil_color,$history_alpha)",
@@ -92,6 +98,7 @@ function plotly_trace(
             mode = model_mode,
             line = Dict(
                 :color => "rgba($oil_color,$model_alpha)",
+                :width => model_line_width,
             ),
             marker = Dict(
                 :color => "rgba($oil_color,$model_alpha)",
@@ -109,6 +116,7 @@ function plotly_trace(
             mode = history_mode,
             line = Dict(
                 :color => "rgba($oil_color,$history_alpha)",
+                :width => history_line_width,
             ),
             marker = Dict(
                 :color => "rgba($oil_color,$history_alpha)",
@@ -127,6 +135,7 @@ function plotly_trace(
             line = Dict(
                 :shape => "vh",
                 :color => "rgba($water_color,$model_alpha)",
+                :width => model_line_width,
             ),
             marker = Dict(
                 :color => "rgba($water_color,$model_alpha)",
@@ -143,6 +152,7 @@ function plotly_trace(
             mode = history_mode,
             line = Dict(
                 :color => "rgba($water_color,$history_alpha)",
+                :width => history_line_width,
             ),
             marker = Dict(
                 :color => "rgba($water_color,$history_alpha)",
@@ -159,6 +169,7 @@ function plotly_trace(
             mode = model_mode,
             line = Dict(
                 :color => "rgba($water_color,$model_alpha)",
+                :width => model_line_width,
              ),
             marker = Dict(
                 :color => "rgba($water_color,$model_alpha)",
@@ -176,6 +187,7 @@ function plotly_trace(
             mode = history_mode,
             line = Dict(
                 :color => "rgba($water_color,$history_alpha)",
+                :width => history_line_width,
             ),
             marker = Dict(
                 :color => "rgba($water_color,$history_alpha)",
@@ -212,7 +224,7 @@ function plotly_layout()
             :title => "Time",
             :dtick => 86400*1000*30, # unit is ms
             :ticklen => 5,
-            :domain => [0.1, 0.95],
+            :domain => [0.10, 0.90],
             :rangemode => "tozero",
             #:automargin => false,
             #:showspikes => false,
@@ -223,14 +235,26 @@ function plotly_layout()
             #:ticktext = ['One', 'Three', 'Five', 'Seven', 'Nine', 'Eleven']
         ),
         yaxis = Dict(
-            :title => "Liquid Flowrate [STB/d]",
+            # :title => Dict(
+            #     :text => "Liquid Flowrate [STB/d]",
+            #     :font => Dict(
+            #       :size => 20,
+            #     ),
+            # ),
             #:range => [0, 35],
+            :domain => [0.05, 0.95], # so html does not cut off at the bottom
             :showline => true,
             :ticklen => 5,
             :rangemode => "tozero",
+            
         ),
         yaxis2 = Dict(
-            :title => "Liquid Production Volume [STB]",
+            # :title => Dict(
+            #     :text => "Liquid Production Volume [STB]",
+            #     :font => Dict(
+            #       :size => 20,
+            #     ),
+            # ),
             #:range => [0, 2500],
             :rangemode => "tozero",
             :ticklen => 5,
@@ -245,10 +269,16 @@ function plotly_layout()
             :showgrid => false,
         ),
         yaxis3 = Dict(
-            :title => "Pressure [psi]",
+            # :title => Dict(
+            #     :text => "Pressure [psi]",
+            #     :font => Dict(
+            #       :size => 20,
+            #     ),
+            # ),
             #:range => [0, 11000],
             :rangemode => "tozero",
             :ticklen => 5,
+            :tickformat => ",",
             # titlefont: {color: '#ff7f0e'},
             # tickfont: {color: '#ff7f0e'},
             :anchor => "free", # "free"
