@@ -67,6 +67,77 @@ function find_prt_start_date(path::String; to_datetime = true)
     end
 end
 
+function find_prt_current_date(io::IOStream, pos::Int64; to_datetime = true)
+    seek(io, pos) # re-position, used skip(io, pos) before
+
+    # Possible SECTION lines
+    #SECTION  Starting the simulation on 18-Jan-2020
+    #SECTION  The simulation has reached 26-Jan-2021 374 d. ...
+    #SECTION  Simulation complete.    
+
+    date_token = nothing
+    for line in eachline(io)
+        if !startswith(line, "SECTION")
+            continue
+        end
+        if length(line) < 48
+            continue
+        end
+        if startswith(line, "SECTION  The simulation has reached")
+            tokens = split(line, [' '], keepempty = false)
+            date_token = tokens[6]
+            
+            #days = convert(Day, datetime - start_datetime)
+        end
+    end
+
+    if isnothing(date_token)
+        throw(ErrorException("No DATE found"))
+    end
+
+    if to_datetime
+        return Dates.DateTime(date_token, Dates.dateformat"d-u-Y")
+    else
+        return date_token
+    end
+end
+function find_prt_current_date(path::String, to_datetime = true)
+    open(path, "r") do io
+        return find_prt_current_date(io, to_datetime=to_datetime)
+    end
+end
+
+
+function find_schedule_end_date(io::IOStream; to_datetime=true)
+    date_token = nothing
+    for line in eachline(io)
+        # DATE "04-Feb-2021" 
+        if !startswith(line, "DATE")
+            continue
+        end
+
+        line = strip(line)
+        tokens = split(line, [' ', '"'], keepempty=false)
+        date_token = tokens[2]
+    end
+
+    if isnothing(date_token)
+        throw(ErrorException("No DATE found"))
+    end
+
+    if to_datetime
+        return Dates.DateTime(date_token, Dates.dateformat"d-u-Y")
+    else
+        return date_token
+    end
+
+end
+function find_schedule_end_date(path::String; to_datetime = true)
+    open(path, "r") do io
+        return find_schedule_end_date(io, to_datetime=to_datetime)
+    end
+end
+
 # RSM file
 # "1" marks the beginning of a section of data and starts at column 1.
 # Data starts at column 2
