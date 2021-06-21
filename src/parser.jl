@@ -92,7 +92,8 @@ function find_prt_current_date(io::IOStream, pos::Int64; to_datetime = true)
     end
 
     if isnothing(date_token)
-        throw(ErrorException("No DATE found"))
+        #throw(ErrorException("No DATE found"))
+        return nothing
     end
 
     if to_datetime
@@ -122,7 +123,8 @@ function find_schedule_end_date(io::IOStream; to_datetime=true)
     end
 
     if isnothing(date_token)
-        throw(ErrorException("No DATE found"))
+        #throw(ErrorException("No DATE found"))
+        return nothing
     end
 
     if to_datetime
