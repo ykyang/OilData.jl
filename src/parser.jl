@@ -593,3 +593,32 @@ function read_grdecl_float64!(io::IO, values::Array{Float64}, prop::String, date
 
     return false
 end
+
+function read_grdecl_string!(io::IO, values::Array{String})
+    time_to_break = false
+    
+    # Read tokens
+    tokens = String[]
+    for line in eachline(io)
+        if time_to_break
+            break
+        end
+        
+        line = strip(line)
+        if isempty(line)
+            continue
+        end
+
+        if startswith(line, "--")
+            continue
+        end
+
+        append!(tokens, split(line))
+
+        if endswith(line, '/')
+            time_to_break = true
+        end
+    end
+
+    values .= tokens
+end
