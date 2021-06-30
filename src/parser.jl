@@ -435,3 +435,161 @@ function find_column_name(df_meta, c1, c3, c4)
 
     return df[1,1]
 end
+
+"""
+    skip_grdecl_keyword_data!(io)
+
+Skip the content of a keyword after the keyword has been read and determined
+the content should be skipped.
+"""
+function skip_grdecl_keyword_data!(io)
+    time_to_break = false
+    
+    for line in eachline(io)
+        if time_to_break
+            break
+        end
+        if endswith(line, '/')
+            time_to_break = true
+        end
+    end
+end
+
+"""
+    read_grdecl_float64!(io, values)
+
+Read value section of a keyword.  Notice the keyword should has been read before
+calling this function. 
+"""
+function read_grdecl_float64!(io, values)
+    time_to_break = false
+    
+    # Read tokens
+    tokens = Vector{String}()
+    for line in eachline(io)
+        if time_to_break
+            break
+        end
+        
+        line = strip(line)
+        if isempty(line)
+            continue
+        end
+
+        if startswith(line, "--")
+            continue
+        end
+
+        append!(tokens, split(line))
+
+        if endswith(line, '/')
+            time_to_break = true
+        end
+    end
+
+    # remove "/"
+    tokens = tokens[1:end-1]
+
+    # Parse tokens into Float64
+    ind = 1
+    for token in tokens
+        count_value = split(token,"*")
+        if length(count_value) == 2
+            count = parse(Int64, count_value[1])
+            value = parse(Float64, count_value[2])
+            for x = 1:count
+                values[ind] = value
+                ind += 1
+            end
+        else
+            values[ind] = parse(Float64, count_value[1])
+            ind += 1
+        end
+    end    
+end
+
+"""
+    read_grdecl_float64!(io::IO, values::Array{Float64}, prop::String)
+
+Read static data
+"""
+function read_grdecl_float64!(io::IO, values::Array{Float64}, prop::String)
+    for line in eachline(io)
+        line = strip(line)
+        if startswith(line, "--")
+            continue
+        end
+        if isempty(line)
+            continue
+        end
+
+        tokens = split(line)
+        if isempty(tokens)
+            continue
+        end
+        
+        keyword = tokens[1]
+        if keyword != prop
+            skip_grdecl_keyword_data!(io)
+        else
+            read_grdecl_float64!(io, values)
+            return true
+        end
+    end
+
+    return false
+end
+
+"""
+
+Read dynamic data (with timestamp)
+
+# Arguments
+- `values`: Pre-allocated array to save values to
+- `prop`: Property name
+- `date`: Date
+"""
+function read_grdecl_float64!(io::IO, values::Array{Float64}, prop::String, date)
+    for line in eachline(io)
+        line = strip(line)
+        if startswith(line, "--")
+            continue
+        end
+        if isempty(line)
+            continue
+        end
+
+        tokens = split(line)
+        if isempty(tokens)
+            continue
+        end
+        
+        keyword = tokens[1]
+        if keyword != prop
+            skip_grdecl_keyword_data!(io)
+        else
+            # Read timestep
+            line = readline(io)
+            tokens = split(line, [' ', ','], keepempty=false)
+            # last 4 tokens are time: Jan 07,2022 00:00:00
+            timee = tokens[end]
+            yearr = tokens[end-1]
+            datee = tokens[end-2]
+            monthh = tokens[end-3]
+            
+            #current_date = Date("$yearr-$monthh-$datee", dateformat"y-u-d") # 2022-Jan-07
+            current_date = Date("$yearr-$monthh-$(datee)T$(timee)", dateformat"y-u-dTHH:MM:SS") # 2022-Jan-07
+            #DateTime("2021-Jun-18T15:38:17", DateFormat("y-u-dTHH:MM:SS"))
+            
+            if current_date != date
+                skip_grdecl_keyword_data!(io)
+            else
+                read_grdecl_float64!(io, values)
+
+                return true
+            end
+        end
+    end
+
+    return false
+end

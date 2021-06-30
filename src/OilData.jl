@@ -2,7 +2,7 @@ module OilData
 
 using DataFrames
 using PlotlyJS
-import Dates
+using Dates
 
     
 #greet() = print("Hello World!")
@@ -13,7 +13,9 @@ export add_day,
        read_rsm, 
        find_column_name, 
        find_schedule_end_date, 
-       find_prt_current_date
+       find_prt_current_date,
+       read_grdecl_float64!,
+       skip_grdecl_keyword_data!
 
 include("plotly.jl")
 export plotly_trace, plotly_layout

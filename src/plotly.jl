@@ -4,8 +4,217 @@
 #     end
 # end
 
+# TODO: Use plotly_trace(; label="WBHP")
+# function plotly_trace(
+#     label;
+#     history_alpha = 1.0, model_alpha = 0.3,
+#     #history_alpha = 0.3, model_alpha = 1.0,
+    
+#     history_mode = "lines", model_mode = "lines",
+#     #history_mode = "lines", model_mode = "markers",
+#     #history_mode = "markers", model_mode = "lines",
+#     history_line_width = 3, model_line_width = 2,
+#     water_color = "30,144,255", oil_color="0,128,0", bhp_color = "0,0,0",
+#     db...
+#     )
+
+
+#     trace = nothing
+#     if     "WBHP"  == label
+#         trace = scatter(
+#             mode = model_mode,
+#             line = Dict(
+#                 :color => "rgba($bhp_color,$model_alpha)",
+#                 :width => model_line_width,
+#             ),
+#             marker = Dict(
+#                 :color => "rgba($bhp_color,$model_alpha)",
+#                 :size => 4,
+#                 :line => Dict(
+#                     :color => "rgb($bhp_color)",
+#                     #:width => 1,
+#                     :width => 0,
+#                 ),
+#             ),
+#             yaxis = "y3",
+#         )
+#     elseif "WBHPH" == label
+#         trace = scatter(
+#             mode = history_mode,
+#             line = Dict(
+#                 :color => "rgba($bhp_color,$history_alpha)",
+#                 #:width => history_line_width,
+#                 :width => model_line_width, # no need to be thick
+#             ),
+#             marker = Dict(
+#                 :color => "rgba($bhp_color,$history_alpha)",
+#                 :size => 4,
+#                 :line => Dict(
+#                     :color => "rgb($bhp_color)",
+#                     #:width => 1,
+#                     :width => 0,
+#                 ),
+#             ),
+#             yaxis = "y3",
+#         )                
+#     elseif "WOPR"  == label
+#         trace = scatter(
+#             mode = model_mode,
+#             line = Dict(
+#                 :shape => "vh",
+#                 :color => "rgba($oil_color,$model_alpha)",
+#                 :width => model_line_width,
+#             ),
+#             marker = Dict(
+#                 :color => "rgba($oil_color,$model_alpha)",
+#                 :size => 4,
+#                 :line => Dict(
+#                     :color => "rgb($oil_color)",
+#                     :width => 0,
+#                     #:width => 1,
+#                 ),
+#             ),
+#         )        
+#     elseif "WOPRH" == label
+#         trace = scatter(
+#             #mode = "markers",
+#             mode = history_mode,
+#             line = Dict(
+#                 :shape => "vh",
+#                 :color => "rgba($oil_color,$history_alpha)",
+#                 :width => history_line_width,
+#             ),
+#             marker = Dict(
+#                 :color => "rgba($oil_color,$history_alpha)",
+#                 :size => 4,
+#                 :line => Dict(
+#                     :color => "rgb($oil_color)",
+#                     :width => 0,
+#                     #:width => 1,
+#                 ),
+#             ),
+#         )
+#     elseif "WOPT"  == label
+#         trace = scatter(
+#             mode = model_mode,
+#             line = Dict(
+#                 :color => "rgba($oil_color,$model_alpha)",
+#                 :width => model_line_width,
+#             ),
+#             marker = Dict(
+#                 :color => "rgba($oil_color,$model_alpha)",
+#                 :size => 4,
+#                 :line => Dict(
+#                     :color => "rgb($oil_color)",
+#                     #:width => 1,
+#                     :width => 0,
+#                 ),
+#             ),
+#             yaxis = "y2",
+#          )
+#     elseif "WOPTH" == label
+#         trace = scatter(
+#             mode = history_mode,
+#             line = Dict(
+#                 :color => "rgba($oil_color,$history_alpha)",
+#                 :width => history_line_width,
+#             ),
+#             marker = Dict(
+#                 :color => "rgba($oil_color,$history_alpha)",
+#                 :size => 4,
+#                 :line => Dict(
+#                     :color => "rgb($oil_color)",
+#                     #:width => 1,
+#                     :width => 0,
+#                 ),
+#             ),
+#             yaxis = "y2",
+#         )
+#     elseif "WWPR"  == label
+#         trace = scatter(
+#             mode = model_mode,
+#             line = Dict(
+#                 :shape => "vh",
+#                 :color => "rgba($water_color,$model_alpha)",
+#                 :width => model_line_width,
+#             ),
+#             marker = Dict(
+#                 :color => "rgba($water_color,$model_alpha)",
+#                 :size => 4,
+#                 :line => Dict(
+#                     :color => "rgb($water_color)",
+#                     #:width => 1,
+#                     :width => 0,
+#                 ),
+#             ),
+#         )        
+#     elseif "WWPRH" == label
+#         trace = scatter(
+#             mode = history_mode,
+#             line = Dict(
+#                 :color => "rgba($water_color,$history_alpha)",
+#                 :width => history_line_width,
+#             ),
+#             marker = Dict(
+#                 :color => "rgba($water_color,$history_alpha)",
+#                 :size => 4,
+#                 :line => Dict(
+#                     :color => "rgb($water_color)",
+#                     #:width => 1,
+#                     :width => 0,
+#                 ),
+#             ),
+#         )        
+#     elseif "WWPT"  == label
+#         trace = scatter(
+#             mode = model_mode,
+#             line = Dict(
+#                 :color => "rgba($water_color,$model_alpha)",
+#                 :width => model_line_width,
+#              ),
+#             marker = Dict(
+#                 :color => "rgba($water_color,$model_alpha)",
+#                 :size => 4,
+#                 :line => Dict(
+#                     :color => "rgb($water_color)",
+#                     #:width => 1,
+#                     :width => 0,
+#                 ),
+#             ),
+#             yaxis = "y2",
+#         )
+#     elseif "WWPTH"  == label
+#         trace = scatter(
+#             mode = history_mode,
+#             line = Dict(
+#                 :color => "rgba($water_color,$history_alpha)",
+#                 :width => history_line_width,
+#             ),
+#             marker = Dict(
+#                 :color => "rgba($water_color,$history_alpha)",
+#                 :size => 4,
+#                 :line => Dict(
+#                     :color => "rgb($water_color)",
+#                     #:width => 1,
+#                     :width => 0,
+#                 ),
+#             ),
+#             yaxis = "y2",
+#         )        
+#     else
+#         throw(ErrorException("Unknown label: $label"))
+#     end
+
+#     for pair in db # pairs
+#         trace[pair[1]] = pair[2]
+#     end
+
+#     return trace
+# end
+
 function plotly_trace(
-    label;
+    ;
+    label = "WBHP",
     history_alpha = 1.0, model_alpha = 0.3,
     #history_alpha = 0.3, model_alpha = 1.0,
     
