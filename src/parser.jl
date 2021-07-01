@@ -559,7 +559,7 @@ Read dynamic data (with timestamp)
 - `prop`: Property name
 - `date`: Date
 """
-function read_grdecl_keyword_data(io::IO, values::Array{T}, prop::String, date) where {T<:Real}
+function read_grdecl_keyword_data!(io::IO, values::Array{T}, prop::String, date) where {T<:Real}
     for line in eachline(io)
         line = strip(line)
         if startswith(line, "--")
