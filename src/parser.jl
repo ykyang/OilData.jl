@@ -454,6 +454,7 @@ function skip_grdecl_keyword_data!(io)
         end
     end
 end
+
 """
     read_grdecl_keyword_data!(io::IO, values::Array{T}) where {T<:String}
 
@@ -481,6 +482,8 @@ end
     read_grdecl_keyword_data!(io::IO, values::Array{T}) where {T<:Real}
 
 Read keyword data as subtypes of `Real`.
+Read values of a keyword.  Notice the keyword should has been read before
+calling this function. 
 """
 function read_grdecl_keyword_data!(io::IO, values::Array{T}) where {T<:Real}
     # Read tokens as strings
@@ -519,58 +522,13 @@ function read_grdecl_keyword_data!(io::IO, values::Array{T}) where {T<:Real}
     return nothing
 end
 
-
-
 """
-    read_grdecl_float64!(io, values)
+    read_grdecl_keyword_data!(io::IO, values::Array{T}, prop::String) where {T<:Real}
 
-Deprecated, use read read_grdecl_keyword_data!
-Read value section of a keyword.  Notice the keyword should has been read before
-calling this function. 
+Read static data.
+Read data of a given keyword as a subtype of `Real`.
 """
-function read_grdecl_float64!(io, values::Array{Float64})
-    # Read tokens as strings
-    tokens = Vector{String}()
-    for line in eachline(io)
-
-        line = strip(line)
-        if isempty(line)           continue  end
-        if startswith(line, "--")  continue  end
-
-        append!(tokens, split(line))
-
-        if endswith(line, '/')  break  end
-    end
-
-    # remove "/"
-    tokens = tokens[1:end-1]
-
-    # Parse tokens into Float64
-    ind = 1
-    for token in tokens
-        count_value = split(token,"*")
-        if length(count_value) == 2
-            count = parse(Int64, count_value[1])
-            value = parse(Float64, count_value[2])
-            for x = 1:count
-                values[ind] = value
-                ind += 1
-            end
-        else
-            values[ind] = parse(Float64, count_value[1])
-            ind += 1
-        end
-    end
-
-    return nothing
-end
-
-"""
-    read_grdecl_float64!(io::IO, values::Array{Float64}, prop::String)
-
-Read static data.  Return `true` if keyword found and read.
-"""
-function read_grdecl_float64!(io::IO, values::Array{Float64}, prop::String)
+function read_grdecl_keyword_data!(io::IO, values::Array{T}, prop::String) where {T<:Real}
     for line in eachline(io)
         line = strip(line)
 
@@ -583,7 +541,7 @@ function read_grdecl_float64!(io::IO, values::Array{Float64}, prop::String)
         if keyword != prop
             skip_grdecl_keyword_data!(io)
         else
-            read_grdecl_float64!(io, values)
+            read_grdecl_keyword_data!(io, values)
 
             return true
         end
@@ -601,7 +559,7 @@ Read dynamic data (with timestamp)
 - `prop`: Property name
 - `date`: Date
 """
-function read_grdecl_float64!(io::IO, values::Array{Float64}, prop::String, date)
+function read_grdecl_keyword_data(io::IO, values::Array{T}, prop::String, date) where {T<:Real}
     for line in eachline(io)
         line = strip(line)
         if startswith(line, "--")
@@ -636,7 +594,7 @@ function read_grdecl_float64!(io::IO, values::Array{Float64}, prop::String, date
             if current_date != date
                 skip_grdecl_keyword_data!(io)
             else
-                read_grdecl_float64!(io, values)
+                read_grdecl_keyword_data!(io, values)
 
                 return true
             end
@@ -645,21 +603,3 @@ function read_grdecl_float64!(io::IO, values::Array{Float64}, prop::String, date
 
     return false
 end
-
-# function read_grdecl_string!(io::IO, values::Array{String})
-#     # Read tokens
-#     tokens = String[]
-#     for line in eachline(io)
-#         line = strip(line)
-#         if isempty(line)           continue  end
-#         if startswith(line, "--")  continue  end
-
-#         append!(tokens, split(line))
-
-#         if endswith(line, '/')  break  end
-#     end
-
-#     values .= tokens
-
-#     return nothing
-# end
