@@ -15,6 +15,7 @@ export add_day,
        find_schedule_end_date, 
        find_prt_current_date,
        read_grdecl_float64!,
+       read_grdecl_keyword_data!,
        read_grdecl_string!,
        skip_grdecl_keyword_data!
 
