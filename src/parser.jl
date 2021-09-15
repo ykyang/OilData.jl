@@ -67,10 +67,57 @@ function find_prt_start_date(path::String; to_datetime = true)
     end
 end
 
+function find_prt_current_time(io::IOStream, pos::Int64)
+    seek(io, pos) # re-position, used skip(io, pos) before
+
+    # Find the following line to get TIME and TSTEP:
+    #
+    #LOG                    TIME  TSTEP       GOR      WCT      OPR      WPR      GPR      FPR      WIR      GIR  ITER  IMPL 
+    #                          d      d  MSCF/STB  STB/STB    STB/d    STB/d   MSCF/d      psi    STB/d   MSCF/d           % 
+    #          -------------------------------------------------------------------------------------------------------------- 
+    #          SCT    ;   16.450  0.450      1.37    0.950   17.116  323.707   23.449  6102.16    0.000    0.000     6   100
+
+    time_token  = nothing
+    tstep_token = nothing
+    for line in eachline(io)
+        if !startswith(line, "LOG") continue end
+        if length(line) < 34        continue end
+
+        # skip 2 lines
+        # "" == readline(io) when reach EOF
+        if "" == readline(io) continue end
+        if "" == readline(io) continue end
+        
+        # Read this line
+        #          SCT    ;   16.450  0.450      1.37    0.950   17.116  323.707   23.449  6102.16    0.000    0.000     6   100
+        line = readline(io)
+        if "" == line continue end
+        tokens = split(line, [' '], keepempty=false)
+        time_token  = tokens[3]
+        tstep_token = tokens[4]
+    end
+
+    if isnothing(time_token)
+        return nothing
+    end
+
+    time = parse(Float64, time_token)
+    tstep = parse(Float64, tstep_token)
+
+    return (time=time, tstep=tstep)
+end
+function find_prt_current_time(path::String)
+    open(path, "r") do io
+        return find_prt_current_time(io)
+    end
+end
+
+
 function find_prt_current_date(io::IOStream, pos::Int64; to_datetime = true)
     seek(io, pos) # re-position, used skip(io, pos) before
 
-    # Possible SECTION lines
+    # Possible SECTION lines:
+    #
     #SECTION  Starting the simulation on 18-Jan-2020
     #SECTION  The simulation has reached 26-Jan-2021 374 d. ...
     #SECTION  Simulation complete.    
