@@ -79,9 +79,15 @@ function find_prt_current_time(io::IOStream, pos::Int64)
 
     time_token  = nothing
     tstep_token = nothing
+    code_token  = nothing
     for line in eachline(io)
+        # Check if we are at the right place
         if !startswith(line, "LOG") continue end
         if length(line) < 34        continue end
+        tokens = split(line, [' '], keepempty=false)
+        if !((tokens[1] == "LOG") && (tokens[2] == "TIME") && (tokens[3] == "TSTEP")) 
+            continue
+        end
 
         # skip 2 lines
         # "" == readline(io) when reach EOF
@@ -93,8 +99,9 @@ function find_prt_current_time(io::IOStream, pos::Int64)
         line = readline(io)
         if "" == line continue end
         tokens = split(line, [' '], keepempty=false)
-        time_token  = tokens[3]
-        tstep_token = tokens[4]
+        code_token  = tokens[1] # Time step code, see IX pp 1315, Reporting node reference | Reporting property identifiers | Simulation engine properties | Simulation engine properties requiring special description | TIMESTEP_CONTROL_MODE
+        time_token  = tokens[3] # 16.450 Days
+        tstep_token = tokens[4] # 0.450 Days
     end
 
     if isnothing(time_token)
@@ -104,7 +111,7 @@ function find_prt_current_time(io::IOStream, pos::Int64)
     time = parse(Float64, time_token)
     tstep = parse(Float64, tstep_token)
 
-    return (time=time, tstep=tstep)
+    return (time=time, tstep=tstep, code=code_token)
 end
 function find_prt_current_time(path::String)
     open(path, "r") do io
