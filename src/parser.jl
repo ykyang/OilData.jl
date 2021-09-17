@@ -67,6 +67,19 @@ function find_prt_start_date(path::String; to_datetime = true)
     end
 end
 
+"""
+    find_prt_current_time(io::IOStream, pos::Int64)
+    find_prt_current_time(path::String, pos::Int64)
+
+Find the current time in days in floating point number from the PRT file.
+The function looks for a snippet like this.
+```
+LOG                    TIME  TSTEP       GOR      WCT      OPR  ....
+                          d      d  MSCF/STB  STB/STB    STB/d  ....
+          ----------------------------------------------------- ....
+          SCT    ;   16.450  0.450      1.37    0.950   17.116  ....
+```
+"""
 function find_prt_current_time(io::IOStream, pos::Int64)
     seek(io, pos) # re-position, used skip(io, pos) before
 
@@ -113,9 +126,9 @@ function find_prt_current_time(io::IOStream, pos::Int64)
 
     return (time=time, tstep=tstep, code=code_token)
 end
-function find_prt_current_time(path::String)
+function find_prt_current_time(path::String, pos::Int64)
     open(path, "r") do io
-        return find_prt_current_time(io)
+        return find_prt_current_time(io, pos)
     end
 end
 
@@ -156,13 +169,18 @@ function find_prt_current_date(io::IOStream, pos::Int64; to_datetime = true)
         return date_token
     end
 end
-function find_prt_current_date(path::String, to_datetime = true)
+function find_prt_current_date(path::String, pos::Int64, to_datetime = true)
     open(path, "r") do io
-        return find_prt_current_date(io, to_datetime=to_datetime)
+        return find_prt_current_date(io, pos, to_datetime=to_datetime)
     end
 end
 
+"""
+    find_schedule_end_date(io::IOStream; to_datetime=true)
+    find_schedule_end_date(path::String; to_datetime = true)
 
+Find the last date in the schedule.  Returns value in `DateTime` or `String`.
+"""
 function find_schedule_end_date(io::IOStream; to_datetime=true)
     date_token = nothing
     for line in eachline(io)
