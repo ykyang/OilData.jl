@@ -34,6 +34,10 @@
 #   julia --project=test
 #
 # FactCheck package not found
+#
+#
+# Run from a package that develope OilData.jl locally
+#   include("dev/OilData/test/runtests.jl")
 
 using Test
 using Dates

@@ -22,4 +22,8 @@ export add_day,
 
 include("plotly.jl")
 export plotly_trace, plotly_layout
+
+include("utility.jl")
+export smooth_production
+
 end # module
