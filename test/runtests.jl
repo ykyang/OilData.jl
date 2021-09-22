@@ -38,6 +38,8 @@
 #
 # Run from a package that develope OilData.jl locally
 #   include("dev/OilData/test/runtests.jl")
+# Run individual tests
+#   include("dev/OilData/test/test_utility.jl")
 
 using Test
 using Dates

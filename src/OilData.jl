@@ -24,6 +24,8 @@ include("plotly.jl")
 export plotly_trace, plotly_layout
 
 include("utility.jl")
-export smooth_production
+export smooth_production,
+       find_integers,
+       find_indices
 
 end # module
