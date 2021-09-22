@@ -16,6 +16,8 @@
 #   $ julia --project=@.
 #   julia> include("test/runtests.jl")
 #
+# The Pkg test will call "instantiate" and creates the "Manifest.toml" file.
+#
 # Run test from REPL using Pkg
 #   $ cd OilData/
 #   $ julia --project=@.
@@ -85,6 +87,8 @@ end
 
 include("common.jl")
 
+# This lets test_*.jl to detect if it is run
+# as includes or standalone.
 local_6cfddc95df03456583406d57fd5963ac = false
 
 include("test_parser.jl")

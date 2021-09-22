@@ -12,6 +12,7 @@ else
     using OilData
 end
 
+# Avoid include common.jl multiple times
 if !@isdefined local_6cfddc95df03456583406d57fd5963ac
     local_6cfddc95df03456583406d57fd5963ac = true
 end
@@ -26,7 +27,7 @@ function test_find_integers()
     @test ints == [0, 1, 2, 3, 4]
 
     values = [0, 0.5, 2, 3, 3, 4]
-
+    @test_throws ErrorException find_integer_times(values)
 end
 
 function test_find_indices()
@@ -52,8 +53,23 @@ function test_find_indices()
     filter = [4, 1]
     inds = find_indices(filter, values)
     @test inds == [1,7]
+
+    # Duplicated values
+    values = [0, 1, 0.5, 2, 3, 3, 3.8, 4]
+    filter = [1, 3]
+    @test_throws ErrorException find_indices(filter, values)
 end
 
+function test_find_last_duplication()
+    @test 1 == find_last_duplication(1, [1, 1.5, 2, 2, 2, 2, 3]) # 1
+    @test 6 == find_last_duplication(3, [1, 1.5, 2, 2, 2, 2, 3]) # 2
+    @test 7 == find_last_duplication(7, [1, 1.5, 2, 2, 2, 2, 3]) # 3
+end
+
+function test_repair_times()
+    times = [1, 1.5, 2, 2, 2, 2, 3]
+    @test [1, 1.5, 2, 2.25, 2.50, 2.75, 3] == repair_times(times)
+end
 
 function test_smooth_production()
     df = DataFrame( # Pair constructor
@@ -93,6 +109,8 @@ end
 @testset "utility/smooth" begin
     test_find_integers()
     test_find_indices()
+    test_find_last_duplication()
+    test_repair_times()
     test_smooth_production()
 end
 

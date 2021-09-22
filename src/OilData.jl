@@ -3,6 +3,7 @@ module OilData
 using DataFrames
 using PlotlyJS
 using Dates
+using HDF5
 
     
 #greet() = print("Hello World!")
@@ -10,6 +11,7 @@ using Dates
 include("parser.jl")
 export add_day,
        find_prt_start_date,
+       read_hdf5_times,
        read_rsm, 
        find_column_name, 
        find_schedule_end_date, 
@@ -24,8 +26,10 @@ include("plotly.jl")
 export plotly_trace, plotly_layout
 
 include("utility.jl")
-export smooth_production,
-       find_integer_times,
-       find_indices
+export find_integer_times,
+       find_indices,
+       find_last_duplication,
+       repair_times,
+       smooth_production
 
 end # module

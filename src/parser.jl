@@ -17,7 +17,9 @@ function add_day(start::Dates.DateTime, duration)
     #d = start + Dates.Millisecond(Int(duration*86400*1000)) # convert days to ms
 
     d = start + Dates.Millisecond( # convert days to ms
+            # Not sure which one is better
             convert(Int64, round(duration*86400*1000, digits=4)) # 4 is from trial&error, no idea why
+            #convert(Int64, trunc(duration*86400*1000))
         )
     return d
 end
@@ -209,6 +211,13 @@ end
 function find_schedule_end_date(path::String; to_datetime = true)
     open(path, "r") do io
         return find_schedule_end_date(io, to_datetime=to_datetime)
+    end
+end
+
+function read_hdf5_times(filename)
+    h5open(filename, "r") do h5
+        times = h5["general"]["time"]
+        return times[:]
     end
 end
 
