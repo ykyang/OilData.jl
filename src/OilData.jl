@@ -25,7 +25,7 @@ export plotly_trace, plotly_layout
 
 include("utility.jl")
 export smooth_production,
-       find_integers,
+       find_integer_times,
        find_indices
 
 end # module

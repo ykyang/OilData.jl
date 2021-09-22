@@ -1,49 +1,76 @@
-# Simply put
-# Run from terminal
-#   julia --project=@. test/runtests.jl
-#
-# Run from REPL
-#   julia> include("test/runtests.jl")
-# When run from REPL, may need to exit out to force re-compile of the module.
-# 
+################################################################################
 #
 # Document
 # http://abelsiqueira.github.io/blog/test-driven-development-in-julia/
 #
+################################################################################
+# The package directory needs to be "instantiate" in order to run from the 
+# package directory.
+#
 # Run test from command line
-#   cd OilData/
-#   julia --project=@. test/runtests.jl
-# This way it will not print out bunch of package information.
-# pwd() = OilData/
+#   $ cd OilData/
+#   $ julia --project=@. test/runtests.jl
 #
-# Run test from Julia in OilData/
-#   cd OilData/
-#   julia --project=@.
-#   import Pkg
-#   Pkg.test("OilData")
-# This will print out bunch of package information.
-# This can be done anywere where OilData package is loaded.
-# pwd() is OilData/test/
+# Run test from REPL
+#   $ cd OilData/
+#   $ julia --project=@.
+#   julia> include("test/runtests.jl")
 #
-# Run the test from Package mode
-# pkg> test OilData
-# pwd() is OilData/test/
+# Run test from REPL using Pkg
+#   $ cd OilData/
+#   $ julia --project=@.
+#   julia> import Pkg
+#   julia> Pkg.test("OilData")
 #
+# Run test from Package mode
+#   $ cd OilData/
+#   $ julia --project=@.
+#   julia> ]
+#   (OilData) pkg> test OilData
+#
+################################################################################
 # Add package to test/.
 #   cd OilData/
 #   julia --project=test
+#   ]
+#   add DataFrames
+################################################################################
+# Run from REPL, in development environment
+#   $ cd OilDataDev/
+#   $ julia --project=@.
+#   julia> include("dev/OilData/test/runtests.jl")
+#   julia> include("dev/OilData/test/test_parser.jl")
+#   julia> include("dev/OilData/test/test_utility.jl")
+# One can run in the development environment
+#   julia> using Revise
+# to speed up the development cycle.
+################################################################################
+
+
+
+# In a development parent project such as
+#   OilDataDev/
+# where OilData.jl is checkout in dev/
+#   OilDataDev/dev/OilData/
 #
-# FactCheck package not found
-#
-#
-# Run from a package that develope OilData.jl locally
+#   cd OilDataDev/
+#   julia --project=@.
+#   using Revise
 #   include("dev/OilData/test/runtests.jl")
-# Run individual tests
+# Test individual files
+#   include("dev/OilData/test/test_parser.jl")
 #   include("dev/OilData/test/test_utility.jl")
+
+
+
+# Not working
+# Is this the best way for development?
+#   cd OilData/
+#   julia --project=test
+#   
 
 using Test
 using Dates
-using Logging
 
 # see https://discourse.julialang.org/t/writing-tests-in-vs-code-workflow-autocomplete-and-tooltips/57488
 # see https://github.com/julia-vscode/julia-vscode/issues/800
@@ -56,47 +83,9 @@ else
     using OilData
 end
 
-logger = ConsoleLogger(stdout, Logging.Info)
-global_logger(logger)
+include("common.jl")
 
-@test true == true
-@test false == false
-
-function data_dir()
-    
-    #@info "pwd(): $(pwd())"
-    # if basename(path) == "OilData"
-    #     path = joinpath(path, "test")
-    # end
-
-    path = joinpath(pwd(), "data")
-    if isdir(path)
-        return path # ".../.../../OilData/test/data"
-    end
-
-    path = joinpath(pwd(), "test", "data")
-    if isdir(path)
-        return path # ".../.../../OilData/test/data"
-    end
-
-    path = joinpath(pwd(), "..", "data")
-    if isdir(path)
-        return path # ".../.../../OilData/test/data"
-    end
-
-    path = joinpath(pwd(), "..", "..", "data")
-    if isdir(path)
-        return path # ".../.../../OilData/test/data"
-    end
-
-    path = joinpath(pwd(), "..", "..", "..", "data")
-    if isdir(path)
-        return path # ".../.../../OilData/test/data"
-    end
-
-    throw(
-        ErrorException("No data/ found")
-    )
-end
+local_6cfddc95df03456583406d57fd5963ac = false
 
 include("test_parser.jl")
+include("test_utility.jl")

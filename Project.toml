@@ -6,4 +6,5 @@ version = "0.1.0"
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
 PlotlyJS = "f0f68f2c-4968-5e81-91da-67840de0976a"

@@ -1,12 +1,21 @@
 """
-    find_integers(in_values)
+    find_integer_times(values)
 
 Find indices and values in `values` that are integer.  This is more for
 practice than practical purpose, because it is so simple.
 """
-function find_integers(values)
+function find_integer_times(values)
     inds = findall(x->trunc(x) == x, values)
-    return (inds, values[inds])
+    filtered_values = values[inds]
+
+    # Check for uniqueness
+    if length(filtered_values) != length(unique(filtered_values))
+        # This is caused by small time steps, and simulator
+        # does not print all digits.
+        throw(ErrorException("Non-unique integer times detected"))
+    end
+
+    return (inds, filtered_values)
 end
 
 

@@ -12,6 +12,14 @@ else
     using OilData
 end
 
+if !@isdefined local_6cfddc95df03456583406d57fd5963ac
+    local_6cfddc95df03456583406d57fd5963ac = true
+end
+if local_6cfddc95df03456583406d57fd5963ac
+    include("common.jl")
+end
+
+
 function test_add_day()
     dt_0 = DateTime(Date(2021, 1, 1), Time(15, 32, 33))
     dt_1 = DateTime(Date(2021, 1, 2), Time(15, 32, 33))
@@ -50,7 +58,9 @@ function test_add_day()
 end
 
 function test_find_prt_start_date()
-    #@test basename(data_dir()) == "data"
+    if isnothing(data_dir())
+        return
+    end
     
     path = joinpath(data_dir(), "test_start_date.PRT")
     start_datetime = find_prt_start_date(path)
@@ -59,6 +69,9 @@ function test_find_prt_start_date()
 end
 
 function test_find_schedule_end_date()
+    if isnothing(data_dir())
+        return
+    end
     path = joinpath(data_dir(), "test_schedule.ixf")
     end_datetime = find_schedule_end_date(path)
     @test DateTime(2021,2,4) == end_datetime
@@ -70,6 +83,10 @@ function run_read_rsm()
 end
 
 function test_read_rsm()
+    if isnothing(data_dir())
+        return
+    end
+    
     nt = run_read_rsm()
 
     df_body = nt.body
@@ -97,14 +114,16 @@ function test_read_rsm()
     @test df_body[!, colname] isa Vector{Float64}
 end
 
+# Use this to find function name
+# name = StackTraces.stacktrace()[1].func
 
-@testset "base" begin
+@testset "parser/base" begin
     test_add_day()
     test_find_prt_start_date()
     test_find_schedule_end_date()
 end
 
-@testset "read_rsm" begin
+@testset "parser/read_rsm" begin
     test_read_rsm()
 end
 

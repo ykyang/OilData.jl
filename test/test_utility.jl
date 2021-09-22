@@ -12,11 +12,21 @@ else
     using OilData
 end
 
+if !@isdefined local_6cfddc95df03456583406d57fd5963ac
+    local_6cfddc95df03456583406d57fd5963ac = true
+end
+if local_6cfddc95df03456583406d57fd5963ac
+    include("common.jl")
+end
+
 function test_find_integers()
     values = [0, 0.5, 1.0, 1.2, 2, 2.5, 3, 3.8, 4]
-    inds,ints = find_integers(values)
+    inds,ints = find_integer_times(values)
     @test inds == [1,3,5,7,9]
     @test ints == [0, 1, 2, 3, 4]
+
+    values = [0, 0.5, 2, 3, 3, 4]
+
 end
 
 function test_find_indices()
@@ -46,8 +56,6 @@ end
 
 
 function test_smooth_production()
-    @show pwd()
-
     df = DataFrame( # Pair constructor
         "TIME" => [
             0,
@@ -82,8 +90,10 @@ function test_smooth_production()
     @test rdf[!,"WOPR"] == [0.0, 7.5, 18.4, 27.5, 38.4]
 end
 
-@testset "utility" begin
+@testset "utility/smooth" begin
     test_find_integers()
     test_find_indices()
     test_smooth_production()
 end
+
+nothing
