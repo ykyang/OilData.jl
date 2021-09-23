@@ -23,7 +23,11 @@ export add_day,
        skip_grdecl_keyword_data!
 
 include("plotly.jl")
-export plotly_trace, plotly_layout
+export plotly_trace, plotly_layout,
+       axis_time,
+       axis_bhp,
+       axis_oil_rate,
+       axis_water_rate
 
 include("utility.jl")
 export downsample, find_duplication,

@@ -541,6 +541,71 @@ function plotly_layout()
     return layout
 end
 
+function axis_time(; nargs...)
+    db = attr(
+        title      = "Time",
+        type       = "date",
+        tickmode   = "auto",
+        nticks     = 12,
+        dtick      = "M12",
+        ticklen    = 5,
+        rangemode  = "tozero",
+        automargin = true,
+    )
+    
+    for pair in nargs # pairs
+        db[pair[1]] = pair[2]
+    end
+
+    return db
+end
+
+function axis_bhp(; nargs...)
+    db = attr(
+        title = "BHP [psi]",
+        ticklen    = 5,
+        rangemode  = "tozero",
+        automargin = true,
+    )
+
+    for pair in nargs # pairs
+        db[pair[1]] = pair[2]
+    end
+
+    return db
+end
+
+function axis_oil_rate(; nargs...)
+    db = attr(
+        title = "Oil Production Rate, STB/D",
+        ticklen    = 5,
+        rangemode  = "tozero",
+        automargin = true,
+    )
+
+    for pair in nargs # pairs
+        db[pair[1]] = pair[2]
+    end
+
+    return db
+end
+
+function axis_water_rate(; nargs...)
+    db = attr(
+        title = "Water Production Rate, STB/D",
+        ticklen    = 5,
+        rangemode  = "tozero",
+        automargin = true,
+    )
+
+    for pair in nargs # pairs
+        db[pair[1]] = pair[2]
+    end
+
+    return db
+end
+
+
 # Not used
 function subplot_trace(; label="WBHP",
     history_alpha = 1.0, model_alpha = 0.3,
