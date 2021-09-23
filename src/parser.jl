@@ -1,7 +1,7 @@
 """
     add_day(start, duration)
 
-Add `duration` number of days to the `start` date.  Number of days could be
+Calculate dates by adding `duration` (number of days) to the `start` date.  `duration` could be
 decimal.
 
 # Examples
@@ -18,8 +18,8 @@ function add_day(start::Dates.DateTime, duration)
 
     d = start + Dates.Millisecond( # convert days to ms
             # Not sure which one is better
-            convert(Int64, round(duration*86400*1000, digits=4)) # 4 is from trial&error, no idea why
-            #convert(Int64, trunc(duration*86400*1000))
+            #convert(Int64, round(duration*86400*1000, digits=4)) # 4 is from trial&error, no idea why
+            Int64(trunc(duration*86400*1000))
         )
     return d
 end

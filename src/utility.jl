@@ -1,4 +1,24 @@
 """
+    downsample(times, frequency)
+
+Downsample time steps.  Keep time step at every other `days` or more.
+"""
+function downsample(times, days)
+    # Uniform time steps at every other `days`
+    down_times = collect(times[1]:days:times[end])
+    
+    # Ensure last value is included
+    if down_times[end] != times[end]
+        push!(down_times, times[end])
+    end
+
+    # Remove values that are not in times
+    down_times = intersect(down_times, times)
+
+    return down_times
+end
+
+"""
     find_integer_times(times)
 
 Find time steps that are integer.  Return the indices and values found
@@ -35,6 +55,35 @@ function find_indices(filter, values)
     inds = findall(x-> x in filter, values)
 
     return inds
+end
+
+"""
+    find_duplication(times)
+
+Find time steps that are duplicated.  Duplication is a result of low-precision
+output from simulator.  The `times` vector is sorted.
+
+# Examples
+```julia-repl
+julia> inds, vals = find_duplication([1, 1.5, 2, 2, 2, 2, 3])
+([4, 5, 6], [2.0, 2.0, 2.0])
+```
+"""
+function find_duplication(times)
+    duplicated_times = Vector{eltype(times)}() # == eltype(times)[]
+    duplicated_time_inds = Int64[]
+    unique_times = Set{eltype(times)}()
+
+    for (ind,time) in enumerate(times)
+        if time in unique_times
+            push!(duplicated_time_inds, ind)
+            push!(duplicated_times, time)
+        else
+            push!(unique_times, time)
+        end
+    end
+
+    return duplicated_time_inds, duplicated_times
 end
 
 """
@@ -172,8 +221,8 @@ function smooth_production(df::DataFrame, times, selected_times, cols)
     selected_indices = find_indices(selected_times, times) #findall(x->x in selected_times, times)
     #@show selected_times
     if length(selected_times) != length(selected_indices)
-        @show length(selected_indices)
-        @show length(selected_times)
+        #@show length(selected_indices)
+        #@show length(selected_times)
         #@show selected_indices
         for t in selected_indices
             
@@ -189,8 +238,6 @@ function smooth_production(df::DataFrame, times, selected_times, cols)
 
     for col_name in cols # column names
         col = df[!, col_name]
-        @show col_name
-        @show length(col)
         new_col = Float64[]
         push!(new_col, col[1]) # backward time difference so 1st is the same
         for i in 1:selected_count-1 # Each interval between selected times

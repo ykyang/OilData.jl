@@ -26,7 +26,8 @@ include("plotly.jl")
 export plotly_trace, plotly_layout
 
 include("utility.jl")
-export find_integer_times,
+export downsample, find_duplication,
+       find_integer_times,
        find_indices,
        find_last_duplication,
        repair_times,

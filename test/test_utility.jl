@@ -20,6 +20,19 @@ if local_6cfddc95df03456583406d57fd5963ac
     include("common.jl")
 end
 
+function test_downsample()
+    values = [1, 1.1, 2, 2.2, 2.5, 3, 4, 4.3, 5, 5.5, 6, 7, 8]
+    @test downsample(values,2) == [1, 3, 5, 7, 8]
+    @test downsample(values,3) == [1, 4, 7, 8]
+end
+
+function test_find_duplication()
+    values = [1, 1.5, 2, 2, 2, 2, 3]
+    dup_inds, dup_vals = find_duplication(values)
+    @test dup_inds == [4,5,6]
+    @test dup_vals == [2,2,2]
+end
+
 function test_find_integers()
     values = [0, 0.5, 1.0, 1.2, 2, 2.5, 3, 3.8, 4]
     inds,ints = find_integer_times(values)
@@ -107,6 +120,8 @@ function test_smooth_production()
 end
 
 @testset "utility/smooth" begin
+    test_downsample()
+    test_find_duplication()
     test_find_integers()
     test_find_indices()
     test_find_last_duplication()
