@@ -95,6 +95,10 @@ function find_prt_current_time(io::IOStream, pos::Int64)
     time_token  = nothing
     tstep_token = nothing
     code_token  = nothing
+    gor_token   = nothing
+    opr_token   = nothing
+    wpr_token   = nothing
+    gpr_token   = nothing
     for line in eachline(io)
         # Check if we are at the right place
         if !startswith(line, "LOG") continue end
@@ -109,6 +113,9 @@ function find_prt_current_time(io::IOStream, pos::Int64)
         if "" == readline(io) continue end
         if "" == readline(io) continue end
         
+        #LOG                    TIME  TSTEP       GOR      WCT      OPR      WPR      GPR      FPR      WIR      GIR  ITER  IMPL 
+        #                  d      d  MSCF/STB  STB/STB    STB/d    STB/d   MSCF/d      psi    STB/d   MSCF/d           % 
+        # -------------------------------------------------------------------------------------------------------------- 
         # Read this line
         #          SCT    ;   16.450  0.450      1.37    0.950   17.116  323.707   23.449  6102.16    0.000    0.000     6   100
         line = readline(io)
@@ -117,6 +124,10 @@ function find_prt_current_time(io::IOStream, pos::Int64)
         code_token  = tokens[1] # Time step code, see IX pp 1315, Reporting node reference | Reporting property identifiers | Simulation engine properties | Simulation engine properties requiring special description | TIMESTEP_CONTROL_MODE
         time_token  = tokens[3] # 16.450 Days
         tstep_token = tokens[4] # 0.450 Days
+        gor_token   = tokens[5]
+        opr_token   = tokens[7]
+        wpr_token   = tokens[8]
+        gpr_token   = tokens[9]
     end
 
     if isnothing(time_token)
@@ -125,8 +136,12 @@ function find_prt_current_time(io::IOStream, pos::Int64)
 
     time = parse(Float64, time_token)
     tstep = parse(Float64, tstep_token)
+    gor   = parse(Float64, gor_token)
+    opr   = parse(Float64, opr_token)
+    wpr   = parse(Float64, wpr_token)
+    gpr   = parse(Float64, gpr_token)
 
-    return (time=time, tstep=tstep, code=code_token)
+    return (time=time, tstep=tstep, code=code_token, gor=gor, opr=opr, gpr=gpr, wpr=wpr)
 end
 function find_prt_current_time(path::String, pos::Int64)
     open(path, "r") do io
