@@ -539,14 +539,15 @@ Skip the content of a keyword after the keyword has been read and determined
 the content should be skipped.
 """
 function skip_grdecl_keyword_data!(io)
-    time_to_break = false
+    #time_to_break = false
     
     for line in eachline(io)
-        if time_to_break
-            break
-        end
+        # if time_to_break # would not this read one more line?  Should be after endswith?
+        #     break
+        # end
         if endswith(line, '/')
-            time_to_break = true
+            #time_to_break = true
+            break
         end
     end
 end
